@@ -1,0 +1,101 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  message Engine_Message Em;
+  message Acceleration_Message Acc;
+  message Break_Message br;
+  message EmergencyWarning_Message ewm;
+}
+on envVar Engine_Variable
+{
+  if(@Engine_Variable==1)
+  {
+    Em.Engine_Signal= @Engine_Variable;
+    output(Em);
+    write("Engine is on");
+  }
+  else
+  {
+    Em.Engine_Signal= @Engine_Variable;
+    output(Em);
+    write("Engine is off");
+  }
+}
+
+on envVar Acce_Variable
+{
+  if (@Engine_Variable==1)
+  {
+    ewm.Speed_Signal= @Acce_Variable;
+    output(ewm);
+  }
+}
+
+on envVar Rador_Variable
+{
+  ewm.Rador_Signal= @Rador_Variable;
+  output(ewm);
+}
+
+on message EmergencyWarning_Message
+{
+  if((@Engine_Variable==1)  &&  (@Acce_Variable>0))
+  {
+    if(@Rador_Variable==0)
+    {
+      @Brake_Variable=0;
+      @Zone1_Variable=0;
+      @Zone2_Variable=0;
+      @Zone3_Variable=0;
+      write("No Obstacles");
+    }
+    else if(@Rador_Variable==1)
+    {
+      @Brake_Variable=0;
+      @Zone1_Variable=1;
+      @Zone2_Variable=0;
+      @Zone3_Variable=0;
+      ewm.Distance_Signal=30;
+      write("Warning 1: Object is under 25-35 meters");
+    }
+    else if(@Rador_Variable==2)
+    {
+      @Brake_Variable=0;
+      @Zone1_Variable=0;
+      @Zone2_Variable=1;
+      @Zone3_Variable=0;
+      ewm.Distance_Signal=20;
+      write("Warning 2: object is under 15-25 meters");
+    }
+     else if(@Rador_Variable==3)
+    {
+      @Brake_Variable=1;
+      @Zone1_Variable=0;
+      @Zone2_Variable=0;
+      @Zone3_Variable=1;
+      ewm.Distance_Signal=15;
+      write("Final Warning: object is under 15 meters..brake applied");
+    }
+  }
+}
+
+on envVar Brake_Variable
+{
+  br.Break_Signal = @Brake_Variable;
+  output(br);
+  if(@Brake_Variable==0)
+  {
+    ewm.Speed_Signal==0;
+    output(ewm);
+  }
+  else
+  {
+    ewm.Speed_Signal=Acc.Acceleration_Signal;
+    output(ewm);
+  }
+}
