@@ -1,0 +1,1 @@
+Automatic Emergency Braking (AEB) is an advanced safety feature in vehicles designed to prevent or reduce the severity of collisions. Using sensors such as radar, cameras, or lidar, the system monitors the road ahead for obstacles like vehicles, pedestrians, or cyclists.
